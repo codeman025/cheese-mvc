@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -24,10 +21,10 @@ import javax.validation.Valid;
 public class CheeseController {
 
     @Autowired
-    CheeseDao cheeseDao;
+    private CheeseDao cheeseDao;
 
     @Autowired
-    CategoryDao categoryDao;
+    private CategoryDao categoryDao;
 
 
 
@@ -45,18 +42,26 @@ public class CheeseController {
     public String displayAddCheeseForm(Model model) {
         model.addAttribute("title", "Add Cheese");
         model.addAttribute(new Cheese());
-        model.addAttribute("cheeseTypes", CheeseType.values());
+        model.addAttribute("categories", categoryDao.findAll());
         return "cheese/add";
     }
+
+    @RequestMapping(value="add", method = RequestMethod.GET)
+    public String displayAddCheeseForm(Model model){
+        model.addAttribute("title","Add Cheese");
+        model.addAttribute(new Cheese());
+        model.addAttribute("categories",categoryDao.findAll());
+        return "cheese/add";
+    }
+
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public String processAddCheeseForm(@ModelAttribute  @Valid Cheese newCheese,
                                        Errors errors, @RequestParam int categoryId, Model model) {
-//the process is post
+
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Cheese");
-            model.addAtrribute("categories", categoryDao.findAll());
             return "cheese/add";
         }
         Category cat = categoryDao.findOne(categoryId);//in order to get a category that a user can select
@@ -83,6 +88,23 @@ public class CheeseController {
 
         return "redirect:";
     }
+    @RequestMapping(value="edit/{cheseID}", method = RequestMethod.POST)
+    public String processEditForm(Model model, @PathVariable int cheeseId,
+                                  @ModelAttribute @Valid Cheese newCheese,
+                                  @RequestParam int categoryId,
+                                  Errors errors){
+        if(errors.hasErrors()){
+            model.addAttribute("title", "Add Cheese");
+            return "cheese/edit";
+        }
 
+        Cheese editedCheese = cheeseDao.findOne(cheeseId);
+        editedCheese.setName(newCheese.getName());
+        editedCheese.setDescription(newCheese.getDescription());
+        editedCheese.setCategory(categoryDao.findOne(categoryId));
+        cheeseDao.save(editedCheese);
+
+        return "redirect:/cheese";
+    }
 }
 /**
