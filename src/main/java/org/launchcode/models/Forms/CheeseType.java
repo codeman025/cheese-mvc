@@ -1,4 +1,4 @@
-package org.launchcode.models;
+package org.launchcode.models.Forms;
 
 /**
  * Created by LaunchCode

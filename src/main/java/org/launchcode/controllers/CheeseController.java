@@ -1,7 +1,9 @@
 package org.launchcode.controllers;
 
-import org.launchcode.models.Cheese;
-import org.launchcode.models.CheeseType;
+import org.launchcode.models.Forms.Category;
+import org.launchcode.models.Forms.Cheese;
+import org.launchcode.models.Forms.CheeseType;
+import org.launchcode.models.data.CategoryDao;
 import org.launchcode.models.data.CheeseDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,7 +24,12 @@ import javax.validation.Valid;
 public class CheeseController {
 
     @Autowired
-    private CheeseDao cheeseDao;
+    CheeseDao cheeseDao;
+
+    @Autowired
+    CategoryDao categoryDao;
+
+
 
     // Request path: /cheese
     @RequestMapping(value = "")
@@ -44,14 +51,19 @@ public class CheeseController {
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public String processAddCheeseForm(@ModelAttribute  @Valid Cheese newCheese,
-                                       Errors errors, Model model) {
+                                       Errors errors, @RequestParam int categoryId, Model model) {
 //the process is post
+
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Cheese");
+            model.addAtrribute("categories", categoryDao.findAll());
             return "cheese/add";
         }
-
-        cheeseDao.save(newCheese);
+        Category cat = categoryDao.findOne(categoryId);//in order to get a category that a user can select
+        newCheese.setCategory(cat);//findONe is a method speicified by the crudreposityr interface
+        cheeseDao.save(newCheese);//springboot will make a class that implements this method for us
+        //as long as this corresponds to an actual id
+        //
         return "redirect:";
     }
 //the displayremove is get
@@ -73,3 +85,4 @@ public class CheeseController {
     }
 
 }
+/**
