@@ -45,7 +45,7 @@ public class CheeseController {
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public String processAddCheeseForm(@ModelAttribute  @Valid Cheese newCheese,
                                        Errors errors, Model model) {
-
+//the process is post
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Cheese");
             return "cheese/add";
@@ -54,7 +54,7 @@ public class CheeseController {
         cheeseDao.save(newCheese);
         return "redirect:";
     }
-
+//the displayremove is get
     @RequestMapping(value = "remove", method = RequestMethod.GET)
     public String displayRemoveCheeseForm(Model model) {
         model.addAttribute("cheeses", cheeseDao.findAll());

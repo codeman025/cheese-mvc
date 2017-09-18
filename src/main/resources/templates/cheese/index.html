@@ -7,9 +7,11 @@
 <h1 th:text="${title}">Default Title</h1>
 
 <nav th:replace="fragments :: navigation"></nav>
+//uses the navigation bar from fragments
 
 <p th:unless="${cheeses} and ${cheeses.size()}">no cheese :(</p>
-
+//if there are no cheeses display no cheese
+//makes sure cheeses exists and its size is not 0
 
 <table class="table">
 
